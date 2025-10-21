@@ -1,0 +1,79 @@
+@startuml
+title FUCarRentingSystem - Database UML (ERD Diagram)
+
+entity "CarProducer" as CarProducer {
+    * ProducerID : BIGINT <<PK>>
+    --
+    * ProducerName : VARCHAR(100)
+    * Address : VARCHAR(255)
+    * Country : VARCHAR(100)
+}
+
+entity "Car" as Car {
+    * CarID : BIGINT <<PK>>
+    --
+    * CarName : VARCHAR(100)
+    * CarModelYear : INT
+    * Color : VARCHAR(50)
+    * Capacity : INT
+    * Description : TEXT
+    * ImportDate : DATE
+    * RentPrice : DECIMAL(10,2)
+    * Status : VARCHAR(50)
+    --
+    ProducerID : BIGINT <<FK>>
+}
+
+entity "Customer" as Customer {
+    * CustomerID : BIGINT <<PK>>
+    --
+    * CustomerName : VARCHAR(100)
+    * Mobile : VARCHAR(20)
+    * Birthday : DATE
+    * IdentityCard : VARCHAR(20)
+    * LicenceNumber : VARCHAR(20)
+    * LicenceDate : DATE
+    * Email : VARCHAR(100)
+    * Password : VARCHAR(100)
+    --
+    AccountID : BIGINT <<FK>>
+}
+
+entity "CarRental" as CarRental {
+    * RentalID : BIGINT <<PK>>
+    --
+    * PickupDate : DATE
+    * ReturnDate : DATE
+    * RentPrice : DECIMAL(10,2)
+    * Status : VARCHAR(50)
+    --
+    CustomerID : BIGINT <<FK>>
+    CarID : BIGINT <<FK>>
+}
+
+entity "Review" as Review {
+    * ReviewID : BIGINT <<PK>>
+    --
+    * ReviewStar : INT
+    * Comment : TEXT
+    --
+    CustomerID : BIGINT <<FK>>
+    CarID : BIGINT <<FK>>
+}
+
+entity "Account" as Account {
+    * AccountID : BIGINT <<PK>>
+    --
+    * AccountName : VARCHAR(100)
+    * Role : VARCHAR(50)
+}
+
+' Relationships
+CarProducer ||--o{ Car : "produces"
+Car ||--o{ CarRental : "is rented in"
+Customer ||--o{ CarRental : "creates"
+Customer ||--o{ Review : "writes"
+Car ||--o{ Review : "receives"
+Account ||--|| Customer : "owns"
+
+@enduml

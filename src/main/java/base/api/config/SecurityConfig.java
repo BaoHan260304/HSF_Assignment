@@ -1,11 +1,14 @@
 package base.api.config;
 
+import base.api.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +24,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true) // Enable @PreAuthorize
 public class SecurityConfig {
 
     @Autowired
@@ -28,17 +32,16 @@ public class SecurityConfig {
 
     public static final String[] PUBLIC_ENDPOINTS = {
             "/auth/login",
-            "/auth/login1",
-            "/auth/login-v2",
-            "/order/create-order-v2",
-            "/auth/forgot-password",
-            "/auth/login-admin",
-            "/auth/register",
+            "/auth/register",    // Allow registration without authentication
+            "/api/cars",         // Allow viewing cars without authentication (if needed, otherwise remove)
+            "/api/cars/**",      // Allow viewing single car without authentication
+            "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "/v3/api-docs/**",
-            "/ws/**",
-            "/order/webhook-payos"
+            "/",
+            "/login",
+            "/css/**",
+            "/js/**"
     };
 
     @Bean
@@ -58,6 +61,18 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Configure AuthenticationManager to use MyUserDetailsService and PasswordEncoder
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    @Autowired
+    private MyUserDetailsService userDetailsService; // Autowire your custom UserDetailsService
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -71,7 +86,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("web-a-thi-moi-dc-call-api"));  //http:....,http:...
+        configuration.setAllowedOrigins(List.of("*"));  //http:....,http:...
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

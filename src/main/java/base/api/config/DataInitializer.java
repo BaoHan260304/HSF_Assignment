@@ -1,55 +1,55 @@
 package base.api.config;
 
-import base.api.enums.UserGender;
-import base.api.enums.UserRole;
-import base.api.model.user.UserModel;
-import base.api.service.impl.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import base.api.model.Account;
+import base.api.model.Customer;
+import base.api.repository.AccountRepository;
+import base.api.repository.CustomerRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Component
 @Order(1)
+@RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
-    @Autowired
-    private UserService userService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    private final AccountRepository accountRepository;
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) throws Exception {
-        createDefaultAdmin();
-    }
-
-    private void createDefaultAdmin() {
+    public void run(String... args) {
         String adminEmail = "admin@gmail.com";
 
-        if (!userService.existedByEmail(adminEmail)) {
-            UserModel admin = new UserModel();
+        // Nếu chưa có admin thì tạo mới
+        if (customerRepository.findByEmail(adminEmail).isEmpty()) {
+            // Tạo Account trước
+            Account account = new Account();
+            account.setAccountName(adminEmail);
+            account.setRole("ADMIN");
+            Account savedAccount = accountRepository.save(account);
+
+            // Tạo Customer tương ứng
+            Customer admin = new Customer();
+            admin.setCustomerName("System Admin");
             admin.setEmail(adminEmail);
             admin.setPassword(passwordEncoder.encode("123123"));
-            admin.setUserName("admin");
-            admin.setFirstName("System");
-            admin.setLastName("Admin");
-            admin.setRole(UserRole.ADMIN);
-            admin.setActive(true);
-            admin.setGender(UserGender.MALE);
-            admin.setAvatar("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYHxo84-zFT5V8l697Qq0AwX-1QtzC2lHcfK12GbQ-rtsn-gLPtfpvnHjpzTR9sPs6obQ&usqp=CAU");
-            admin.setBirthDate(LocalDateTime.of(1990, 6, 15, 0, 0));
-            admin.setActive(true);
-            userService.createUser(admin);
-            System.out.println("Default admin created: " + adminEmail);
+            admin.setMobile("0123456789");
+            admin.setBirthday(LocalDate.of(1990, 1, 1));
+            admin.setIdentityCard("000000001");
+            admin.setLicenceNumber("AD123456");
+            admin.setLicenceDate(LocalDate.now());
+            admin.setAccount(savedAccount);
+
+            customerRepository.save(admin);
+
+            System.out.println("✅ Default admin created: " + adminEmail);
         } else {
-            System.out.println("Admin already exists");
+            System.out.println("Admin already exists, skip seeding.");
         }
     }
-
-
 }
