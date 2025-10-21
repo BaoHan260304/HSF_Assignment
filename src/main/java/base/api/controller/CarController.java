@@ -1,7 +1,7 @@
 package base.api.controller;
 
 import base.api.dto.request.CarRequest;
-import base.api.dto.CarResponse;
+import base.api.dto.response.CarResponse;
 import base.api.model.Car;
 import base.api.model.CarProducer;
 import base.api.repository.CarProducerRepository;

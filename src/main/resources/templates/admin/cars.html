@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Cars</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Cars</h1>
+        <a th:href="@{/admin/dashboard}">Back to Dashboard</a>
+        <a th:href="@{/admin/cars/add}" class="button">Add New Car</a>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Model Year</th>
+                    <th>Color</th>
+                    <th>Capacity</th>
+                    <th>Rent Price</th>
+                    <th>Status</th>
+                    <th>Producer</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="car : ${cars}">
+                    <td th:text="${car.id}"></td>
+                    <td th:text="${car.carName}"></td>
+                    <td th:text="${car.carModelYear}"></td>
+                    <td th:text="${car.color}"></td>
+                    <td th:text="${car.capacity}"></td>
+                    <td th:text="${car.rentPrice}"></td>
+                    <td th:text="${car.status}"></td>
+                    <td th:text="${car.producer.producerName}"></td>
+                    <td>
+                        <a th:href="@{/admin/cars/edit/{id}(id=${car.id})}">Edit</a>
+                        <a th:href="@{/admin/cars/delete/{id}(id=${car.id})}" onclick="return confirm('Are you sure you want to delete this car?');">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

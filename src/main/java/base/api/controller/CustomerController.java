@@ -1,6 +1,6 @@
 package base.api.controller;
 
-import base.api.dto.CustomerResponse;
+import base.api.dto.response.CustomerResponse;
 import base.api.model.Customer;
 import base.api.service.CustomerService;
 import lombok.RequiredArgsConstructor;

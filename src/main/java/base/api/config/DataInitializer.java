@@ -47,7 +47,7 @@ public class DataInitializer implements CommandLineRunner {
 
             customerRepository.save(admin);
 
-            System.out.println("✅ Default admin created: " + adminEmail);
+            System.out.println("Default admin created: " + adminEmail);
         } else {
             System.out.println("Admin already exists, skip seeding.");
         }

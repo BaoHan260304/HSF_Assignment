@@ -1,7 +1,7 @@
 package base.api.controller;
 
 import base.api.dto.request.CarProducerRequest;
-import base.api.dto.CarProducerResponse;
+import base.api.dto.response.CarProducerResponse;
 import base.api.model.CarProducer;
 import base.api.repository.CarProducerRepository;
 import lombok.RequiredArgsConstructor;

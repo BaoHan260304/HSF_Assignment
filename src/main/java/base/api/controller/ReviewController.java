@@ -1,7 +1,7 @@
 package base.api.controller;
 
 import base.api.dto.request.ReviewRequest;
-import base.api.dto.ReviewResponse;
+import base.api.dto.response.ReviewResponse;
 import base.api.model.Review;
 import base.api.security.CustomUserDetails;
 import base.api.service.ReviewService;

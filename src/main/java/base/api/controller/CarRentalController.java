@@ -1,7 +1,7 @@
 package base.api.controller;
 
 import base.api.dto.request.CarRentalRequest;
-import base.api.dto.CarRentalResponse;
+import base.api.dto.response.CarRentalResponse;
 import base.api.model.CarRental;
 import base.api.security.CustomUserDetails;
 import base.api.service.CarRentalService;

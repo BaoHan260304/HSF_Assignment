@@ -1,6 +1,7 @@
 package base.api.config;
 
 import base.api.security.MyUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,43 +26,32 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true) // Enable @PreAuthorize
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthFilter;
+    private final MyUserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public static final String[] PUBLIC_ENDPOINTS = {
-            "/auth/login",
-            "/auth/register",    // Allow registration without authentication
-            "/api/cars",         // Allow viewing cars without authentication (if needed, otherwise remove)
-            "/api/cars/**",      // Allow viewing single car without authentication
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
+    public static final String[] PUBLIC_WEB_ENDPOINTS = {
             "/",
             "/login",
+            "/register",
             "/css/**",
-            "/js/**"
+            "/js/**",
+            "/images/**",
+            "/error"
+    };
+
+    public static final String[] PUBLIC_API_ENDPOINTS = {
+            "/auth/login",
+            "/auth/register"
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   AuthenticationManager authenticationManager) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .authenticationManager(authenticationManager);
-
-        return http.build();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
-    // Configure AuthenticationManager to use MyUserDetailsService and PasswordEncoder
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -70,31 +60,42 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    @Autowired
-    private MyUserDetailsService userDetailsService; // Autowire your custom UserDetailsService
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for API, consider enabling for web forms
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(PUBLIC_WEB_ENDPOINTS).permitAll() // Allow public web pages
+                        .requestMatchers(PUBLIC_API_ENDPOINTS).permitAll() // Allow public API endpoints
+                        .requestMatchers("/api/**").authenticated() // All API endpoints require authentication (JWT)
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Admin pages require ADMIN role
+                        .requestMatchers("/customer/**").hasRole("CUSTOMER") // Customer pages require CUSTOMER role
+                        .anyRequest().authenticated() // Any other request requires authentication
+                )
+                .formLogin(form -> form // Configure form-based login for web UI
+                        .loginPage("/login")
+                        .loginProcessingUrl("/perform_login") // URL to submit login form
+                        .defaultSuccessUrl("/", true) // Redirect to home on successful login
+                        .failureUrl("/login?error=true") // Redirect to login page on failure
+                        .permitAll()
+                )
+                .logout(logout -> logout // Configure logout for web UI
+                        .logoutUrl("/perform_logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .permitAll()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Use sessions for web UI
+                );
+
+        // Add JWT filter for API endpoints, but only if the request is for an API
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));  //http:....,http:...
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-
 }

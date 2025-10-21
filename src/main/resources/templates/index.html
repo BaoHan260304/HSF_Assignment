@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FU Car Renting System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to FU Car Renting System!</h1>
+        <p>Hello, <span th:text="${username}">Guest</span>!</p>
+
+        <div sec:authorize="!isAuthenticated()">
+            <p>Please <a th:href="@{/login}">Login</a> or <a th:href="@{/register}">Register</a> to continue.</p>
+        </div>
+
+        <div sec:authorize="hasRole('ADMIN')">
+            <p>Go to <a th:href="@{/admin/dashboard}">Admin Dashboard</a></p>
+        </div>
+
+        <div sec:authorize="hasRole('CUSTOMER')">
+            <p>Go to <a th:href="@{/customer/dashboard}">Customer Dashboard</a></p>
+        </div>
+
+        <form th:action="@{/perform_logout}" method="post" sec:authorize="isAuthenticated()">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

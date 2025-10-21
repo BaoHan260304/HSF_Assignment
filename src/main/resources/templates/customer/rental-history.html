@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Rental History</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>My Rental History</h1>
+        <a th:href="@{/customer/dashboard}">Back to Dashboard</a>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Rental ID</th>
+                    <th>Car Name</th>
+                    <th>Pickup Date</th>
+                    <th>Return Date</th>
+                    <th>Rent Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="rental : ${rentalHistory}">
+                    <td th:text="${rental.customer.id} + '-' + ${rental.car.id}"></td> <!-- Composite ID representation -->
+                    <td th:text="${rental.car.carName}"></td>
+                    <td th:text="${rental.pickupDate}"></td>
+                    <td th:text="${rental.returnDate}"></td>
+                    <td th:text="${rental.rentPrice}"></td>
+                    <td th:text="${rental.status}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
