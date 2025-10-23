@@ -1,5 +1,6 @@
 package base.api.dto.response;
 
+import base.api.enums.CarRentalStatus;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -13,5 +14,5 @@ public class CarRentalResponse {
     private LocalDate pickupDate;
     private LocalDate returnDate;
     private Double rentPrice;
-    private String status;
+    private CarRentalStatus status;
 }

@@ -30,8 +30,8 @@
                     <td th:text="${customer.mobile}"></td>
                     <td th:text="${customer.account.role}"></td>
                     <td>
-                        <a th:href="@{/admin/customers/edit/{id}(id=${customer.id})}">Edit</a>
-                        <a th:href="@{/admin/customers/delete/{id}(id=${customer.id})}" onclick="return confirm('Are you sure you want to delete this customer?');">Delete</a>
+                        <a th:href="@{/admin/customers/edit/{id}(id=${customer.id})}"class="button-edit">Edit</a>
+                        <a th:href="@{/admin/customers/delete/{id}(id=${customer.id})}" class="button-delete" onclick="return confirm('Are you sure you want to inactive this customer?');">Inactive</a>
                     </td>
                 </tr>
             </tbody>

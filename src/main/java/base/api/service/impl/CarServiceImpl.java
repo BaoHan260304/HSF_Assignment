@@ -23,6 +23,11 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    public List<Car> findAvailableCars() {
+        return carRepository.findByStatus("Available");
+    }
+
+    @Override
     public Optional<Car> findCarById(Long id) {
         return carRepository.findById(id);
     }
@@ -36,8 +41,7 @@ public class CarServiceImpl implements CarService {
     public void deleteCar(Long id) {
         boolean isInTransaction = carRentalRepository.existsByCar_Id(id);
         if (isInTransaction) {
-            Car car = carRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Car not found with id: " + id));
+            Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found with id: " + id));
             car.setStatus("Rented"); // Or "Archived", "Unavailable"
             carRepository.save(car);
         } else {

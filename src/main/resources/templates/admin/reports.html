@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Reports</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>Rental Reports</h1>
+        <a th:href="@{/admin/dashboard}">Back to Dashboard</a>
+
+        <!-- Report Generation Form -->
+        <form th:action="@{/admin/reports}" method="get" class="report-form">
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" th:value="${startDate}" required>
+            </div>
+            <div class="form-group">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" th:value="${endDate}" required>
+            </div>
+            <button type="submit">Generate Report</button>
+        </form>
+
+        <!-- Report Results Table -->
+        <div th:if="${rentals != null}">
+            <h2 th:if="${#lists.isEmpty(rentals)}">No rentals found for the selected period.</h2>
+            <table th:if="${!#lists.isEmpty(rentals)}">
+                <thead>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Car Name</th>
+                        <th>Pickup Date</th>
+                        <th>Return Date</th>
+                        <th>Rent Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="rental : ${rentals}">
+                        <td th:text="${rental.customer.customerName}"></td>
+                        <td th:text="${rental.car.carName}"></td>
+                        <td th:text="${#temporals.format(rental.pickupDate, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${#temporals.format(rental.returnDate, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${#numbers.formatDecimal(rental.rentPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+                        <td th:text="${rental.status}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

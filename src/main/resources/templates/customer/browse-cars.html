@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Browse Available Cars</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Available Cars for Rent</h1>
+    <a th:href="@{/customer/dashboard}">Back to Dashboard</a>
+
+    <div th:if="${#lists.isEmpty(cars)}" class="info-message">
+        <p>Sorry, there are no cars available at the moment.</p>
+    </div>
+
+    <table th:if="${!#lists.isEmpty(cars)}">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Model Year</th>
+            <th>Color</th>
+            <th>Capacity</th>
+            <th>Rent Price/Day</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="car : ${cars}">
+            <td th:text="${car.carName}"></td>
+            <td th:text="${car.carModelYear}"></td>
+            <td th:text="${car.color}"></td>
+            <td th:text="${car.capacity}"></td>
+            <td th:text="${#numbers.formatDecimal(car.rentPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+            <td>
+                <a th:href="@{/customer/book-car/{id}(id=${car.id})}" class="button">Book Now</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

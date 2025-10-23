@@ -5,6 +5,7 @@ import base.api.model.Customer;
 import base.api.repository.AccountRepository;
 import base.api.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,6 +34,11 @@ public class MyUserDetailsService implements UserDetailsService {
         }
 
         Customer customer = customerOptional.get();
+
+        // KIỂM TRA TRẠNG THÁI KHÔNG HOẠT ĐỘNG
+        if (customer.isInactive()) {
+            throw new DisabledException("User account has been disabled.");
+        }
 
         return new CustomUserDetails(account, customer.getPassword());
     }

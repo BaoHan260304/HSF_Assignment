@@ -38,6 +38,10 @@ public class Customer extends BaseModel {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "inactive", nullable = false, columnDefinition = "bit default 0")
+    private boolean inactive = false;
+
+
     @OneToOne
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;

@@ -17,7 +17,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<Customer> findAllCustomers() {
-        return customerRepository.findAll();
+        return customerRepository.findByInactiveFalse();
     }
 
     @Override
@@ -38,7 +38,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
+    public void inActiveCustomer(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+        // Đánh dấu khách hàng là không hoạt động (inactive)
+        customer.setInactive(true);
+        customerRepository.save(customer);
     }
 }

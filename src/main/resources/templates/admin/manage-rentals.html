@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Rentals</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Manage All Rentals</h1>
+    <ul>
+        <li><a th:href="@{/admin/dashboard}">Back to Dashboard</a></li>
+        <li><a th:href="@{/admin/reports}">View Rental Reports</a></li>
+    </ul>
+
+    <!-- Display messages -->
+    <div th:if="${successMessage}" class="success-message">
+        <p th:text="${successMessage}"></p>
+    </div>
+    <div th:if="${errorMessage}" class="error-message">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Car</th>
+            <th>Pickup Date</th>
+            <th>Return Date</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="rental : ${rentals}">
+            <td th:text="${rental.customer.customerName}"></td>
+            <td th:text="${rental.car.carName}"></td>
+            <td th:text="${#temporals.format(rental.pickupDate, 'yyyy-MM-dd')}"></td>
+            <td th:text="${#temporals.format(rental.returnDate, 'yyyy-MM-dd')}"></td>
+            <td th:text="${#numbers.formatDecimal(rental.rentPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+            <td><span th:text="${rental.status}" th:classappend="${'status-' + #strings.toLowerCase(rental.status)}"></span></td>
+            <td>
+                <!-- Show actions only if the status is PENDING -->
+                <div th:if="${rental.status.name() == 'PENDING'}">
+                    <a th:href="@{/admin/rentals/confirm/{customerId}/{carId}(customerId=${rental.customer.id}, carId=${rental.car.id})}" class="button">Confirm</a>
+                    <a th:href="@{/admin/rentals/cancel/{customerId}/{carId}(customerId=${rental.customer.id}, carId=${rental.car.id})}" class="button-delete">Cancel</a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

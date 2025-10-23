@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface CarService {
     List<Car> findAllCars();
 
+    List<Car> findAvailableCars();
+
     Optional<Car> findCarById(Long id);
 
     Car saveCar(Car car);

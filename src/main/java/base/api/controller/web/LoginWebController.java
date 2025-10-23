@@ -1,4 +1,4 @@
-package base.api.controller;
+package base.api.controller.web;
 
 import base.api.dto.request.RegisterRequest;
 import base.api.service.AuthService;
@@ -33,7 +33,16 @@ public class LoginWebController {
     @PostMapping("/register")
     public String registerSubmit(@ModelAttribute RegisterRequest registerRequest, Model model) {
         try {
-            authService.registerCustomer(registerRequest.getName(), registerRequest.getEmail(), registerRequest.getPassword(), registerRequest.getMobile(), registerRequest.getBirthday().toString(), registerRequest.getIdentityCard(), registerRequest.getLicenceNumber(), registerRequest.getLicenceDate().toString());
+            authService.registerCustomer(
+                    registerRequest.getName(),
+                    registerRequest.getEmail(),
+                    registerRequest.getPassword(),
+                    registerRequest.getMobile(),
+                    registerRequest.getBirthday().toString(),
+                    registerRequest.getIdentityCard(),
+                    registerRequest.getLicenceNumber(),
+                    registerRequest.getLicenceDate().toString()
+            );
             return "redirect:/login?registered=true"; // Redirect to login page with success message
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());

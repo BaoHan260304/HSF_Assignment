@@ -1,12 +1,10 @@
 package base.api.model;
 
+import base.api.enums.CarRentalStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -36,7 +34,8 @@ public class CarRental {
     private Double rentPrice;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING) // Lưu Enum dưới dạng chuỗi trong DB
+    private CarRentalStatus status;
 
     @Data
     @NoArgsConstructor
